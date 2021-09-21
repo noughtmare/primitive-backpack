@@ -1,5 +1,5 @@
 cabal-version:      2.4
-name:               backpack-primitive
+name:               primitive-backpack
 version:            0.1.0.0
 
 -- A short (one-line) description of the package.
@@ -61,14 +61,14 @@ library
     default-language:   Haskell2010
 
 library test
-    build-depends:      base, backpack-primitive
+    build-depends:      base, primitive-backpack
     hs-source-dirs:     test
     exposed-modules:    Test
     default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
     default-language: Haskell2010
     ghc-options: -O -ddump-simpl -ddump-to-file
 
-executable backpack-primitive
+executable primitive-backpack
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.

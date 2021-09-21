@@ -1,4 +1,4 @@
-# Revision history for backpack-primitive
+# Revision history for primitive-backpack
 
 ## 0.1.0.0 -- YYYY-mm-dd
 
