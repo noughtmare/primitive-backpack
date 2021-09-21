@@ -1,0 +1,6 @@
+signature PrimMonad where
+
+import GHC.Prim
+  
+class Monad m => PrimMonad m s | m -> s where
+  primitive :: (State# s -> (# State# s, a #)) -> m a

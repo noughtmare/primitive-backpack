@@ -1,0 +1,86 @@
+cabal-version:      2.4
+name:               backpack-primitive
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+-- synopsis:
+
+-- A longer description of the package.
+-- description:
+
+-- A URL where users can report bugs.
+-- bug-reports:
+
+-- The license under which the package is released.
+license: BSD-3-Clause
+license-file: LICENSE
+author:             Jaro Reinders
+maintainer:         jaro.reinders@gmail.com
+
+-- A copyright notice.
+copyright: 2021 Jaro Reinders
+-- category:
+extra-source-files: CHANGELOG.md
+
+library indef
+    build-depends:      base, ghc-prim
+    hs-source-dirs:     indef
+    signatures:         PrimMonad
+    default-extensions: UnboxedTuples, MagicHash, FunctionalDependencies
+    default-language: Haskell2010
+
+library st
+    build-depends:      base, ghc-prim
+    hs-source-dirs:     st
+    exposed-modules:    PrimST
+    reexported-modules: PrimST as PrimMonad
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+
+library io
+    build-depends:      base, ghc-prim
+    hs-source-dirs:     io
+    exposed-modules:    PrimIO
+    reexported-modules: PrimIO as PrimMonad
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+
+library readert
+    build-depends:      base, ghc-prim, transformers, indef
+    hs-source-dirs:     readert
+    exposed-modules:    PrimReaderT
+    reexported-modules: PrimReaderT as PrimMonad
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+
+library
+    build-depends:      base, deepseq, indef
+    hs-source-dirs:     src
+    exposed-modules:    Data.Primitive.Array
+                      , Control.Monad.Primitive
+    default-language:   Haskell2010
+
+library test
+    build-depends:      base, backpack-primitive
+    hs-source-dirs:     test
+    exposed-modules:    Test
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+    ghc-options: -O -ddump-simpl -ddump-to-file
+
+executable backpack-primitive
+    main-is:          Main.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:    base ^>=4.14.1.0, test, st, readert, ghc-prim, transformers
+    mixins:           readert (PrimReaderT as PrimReaderT1) requires (PrimMonad as PrimST)
+                    , readert (PrimReaderT as PrimReaderT2) requires (PrimMonad as PrimReaderT1)
+                    , test    requires (PrimMonad as PrimReaderT2)
+    hs-source-dirs:   app
+    default-language: Haskell2010
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    ghc-options: -O -ddump-simpl -ddump-to-file
