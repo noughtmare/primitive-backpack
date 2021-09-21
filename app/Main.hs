@@ -6,7 +6,7 @@ import Test
 import GHC.Prim
 import Control.Monad.Trans.Reader
 
-test = sieve
+test = (sieve, sieve, sieve)
 
 main :: IO ()
 main = putStrLn "Hello, Haskell!"

@@ -37,6 +37,14 @@ library st
     default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
     default-language: Haskell2010
 
+library stlazy
+    build-depends:      base, ghc-prim
+    hs-source-dirs:     stlazy
+    exposed-modules:    PrimSTLazy
+    reexported-modules: PrimSTLazy as PrimMonad
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+
 library io
     build-depends:      base, ghc-prim
     hs-source-dirs:     io
@@ -53,6 +61,39 @@ library readert
     default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
     default-language: Haskell2010
 
+library trans
+    build-depends:      base, ghc-prim, transformers, indef
+    hs-source-dirs:     trans
+    signatures:         Trans
+    exposed-modules:    PrimTrans
+    reexported-modules: PrimTrans as PrimMonad
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+
+library trans-impl
+    build-depends:      base, ghc-prim, transformers
+    hs-source-dirs:     trans-impl
+    exposed-modules:
+        TransAccumT
+      , TransContT
+      , TransErrorT
+      , TransExceptT
+      , TransIdentityT
+      , TransListT
+      , TransMaybeT
+      , TransReaderT
+      , TransRWSTCPS
+      , TransRWSTLazy
+      , TransRWSTStrict
+      , TransSelectT
+      , TransStateTLazy
+      , TransStateTStrict
+      , TransWriterTCPS
+      , TransWriterTLazy
+      , TransWriterTStrict
+    default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
+    default-language: Haskell2010
+
 library
     build-depends:      base, deepseq, indef
     hs-source-dirs:     src
@@ -66,7 +107,6 @@ library test
     exposed-modules:    Test
     default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
     default-language: Haskell2010
-    ghc-options: -O -ddump-simpl -ddump-to-file
 
 executable primitive-backpack
     main-is:          Main.hs
@@ -76,11 +116,13 @@ executable primitive-backpack
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-    build-depends:    base ^>=4.14.1.0, test, st, readert, ghc-prim, transformers
-    mixins:           readert (PrimReaderT as PrimReaderT1) requires (PrimMonad as PrimST)
-                    , readert (PrimReaderT as PrimReaderT2) requires (PrimMonad as PrimReaderT1)
-                    , test    requires (PrimMonad as PrimReaderT2)
+    build-depends:    base ^>=4.14.1.0, test, stlazy, trans, trans-impl, ghc-prim, transformers
+    mixins:           trans (PrimTrans as PrimTrans1)
+                        requires (PrimMonad as PrimSTLazy, Trans as TransReaderT)
+                    , trans (PrimTrans as PrimTrans2)
+                        requires (PrimMonad as PrimTrans1, Trans as TransStateTStrict)
+                    , test    requires (PrimMonad as PrimTrans2)
     hs-source-dirs:   app
     default-language: Haskell2010
     default-extensions: UnboxedTuples, MagicHash, TypeFamilies, FunctionalDependencies, FlexibleInstances, UndecidableInstances
-    ghc-options: -O -ddump-simpl -ddump-to-file
+    ghc-options: -ddump-simpl -ddump-to-file

@@ -1,0 +1,6 @@
+{-# LANGUAGE KindSignatures #-}
+signature Trans where
+
+import Control.Monad.Trans.Class
+
+class MonadTrans t => Trans t where
